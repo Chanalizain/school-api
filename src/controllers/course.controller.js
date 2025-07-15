@@ -2,13 +2,6 @@ import db from '../models/index.js';
 
 /**
  * @swagger
- * tags:
- *   - name: Courses
- *     description: Course management
- */
-
-/**
- * @swagger
  * /courses:
  *   post:
  *     summary: Create a new course
@@ -19,7 +12,10 @@ import db from '../models/index.js';
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, description, TeacherId]
+ *             required:
+ *               - title
+ *               - description
+ *               - TeacherId
  *             properties:
  *               title:
  *                 type: string
@@ -29,8 +25,9 @@ import db from '../models/index.js';
  *                 type: integer
  *     responses:
  *       201:
- *         description: Course created
+ *         description: Course created successfully
  */
+
 export const createCourse = async (req, res) => {
     try {
         const course = await db.Course.create(req.body);
@@ -49,16 +46,28 @@ export const createCourse = async (req, res) => {
  *     parameters:
  *       - in: query
  *         name: page
- *         schema: { type: integer, default: 1 }
+ *         schema:
+ *           type: integer
+ *           default: 1
  *         description: Page number
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema:
+ *           type: integer
+ *           default: 10
  *         description: Number of items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [id, title, createdAt, updatedAt]
+ *           default: id
+ *         description: Field to sort by
  *     responses:
  *       200:
- *         description: List of courses
+ *         description: List of courses retrieved successfully
  */
+
 export const getAllCourses = async (req, res) => {
 
     // take certain amount at a time
@@ -98,13 +107,15 @@ export const getAllCourses = async (req, res) => {
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
  *         description: Course found
  *       404:
- *         description: Not found
+ *         description: Course not found
  */
+
 export const getCourseById = async (req, res) => {
     try {
         const course = await db.Course.findByPk(req.params.id, { include: [db.Student, db.Teacher] });
@@ -125,16 +136,26 @@ export const getCourseById = async (req, res) => {
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               TeacherId:
+ *                 type: integer
  *     responses:
  *       200:
- *         description: Course updated
+ *         description: Course updated successfully
  */
+
 export const updateCourse = async (req, res) => {
     try {
         const course = await db.Course.findByPk(req.params.id);
@@ -145,7 +166,6 @@ export const updateCourse = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-
 /**
  * @swagger
  * /courses/{id}:
@@ -156,11 +176,13 @@ export const updateCourse = async (req, res) => {
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: Course deleted
+ *         description: Course deleted successfully
  */
+
 export const deleteCourse = async (req, res) => {
     try {
         const course = await db.Course.findByPk(req.params.id);
